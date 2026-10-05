@@ -1,0 +1,22 @@
+{
+  "manifestVersion": 1,
+  "id": "reading_mode",
+  "name": "Reading Mode (\u2325\u21e7R)",
+  "author": "Burbank",
+  "repoUrl": "https://github.com/Burbank/remnote-reading-mode",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
+  "theme": [],
+  "enableOnMobile": false,
+  "description": "Obsidian-style read-only reading view. Toggle with Option+Shift+R (\u2325\u21e7R).",
+  "requestNative": true,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "Read"
+    }
+  ]
+}

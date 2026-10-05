@@ -1,0 +1,6 @@
+node_modules/
+dist/
+PluginZip.zip
+.DS_Store
+*.log
+.webpack_cache/
