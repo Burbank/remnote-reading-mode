@@ -1,41 +1,45 @@
 # Reading Mode (⌥⇧R)
 
-A RemNote desktop plugin that gives you an Obsidian-style read-only reading view so you can study notes without accidentally editing them.
+A RemNote **desktop** plugin that gives you an Obsidian-style read-only reading view so you can study notes without accidentally editing them.
 
 **Toggle:** `Option+Shift+R` (⌥⇧R), or search **Toggle Reading Mode** in the command palette.
 
-## What it does
+## Compared with RemNote’s built-in iOS Read-Only Mode
 
-When Reading Mode is **on**:
-- Hides editing chrome (bullets, drag handles, toolbars, placeholders) for a clean, wide reading layout
-- Blocks typing, paste, cut, and drop in the note editor so you don’t change text by mistake
-- Still allows scrolling, links, fold/expand arrows, copy (`Cmd+C`), find (`Cmd+F`), and navigation keys
-- Leaves the command palette, search, dialogs, and flashcard practice inputs fully usable
+| | **iOS Read-Only Mode** (built-in) | **This plugin (Mac / desktop)** |
+|---|---|---|
+| Where | RemNote iPhone / iPad | RemNote Mac desktop (and web) |
+| Who makes it | RemNote itself | Private plugin (`Burbank/remnote-reading-mode`) |
+| How you turn it on | RemNote’s own Read-Only setting | `⌥⇧R` or command palette |
+| Goal | Stop accidental edits while reading on mobile | Same idea on the Mac, where RemNote has no built-in reading mode |
+| Layout | RemNote’s native read-only UI | Extra clean / wide reading layout (hides bullets, handles, chrome) |
+| Mobile | Yes — use this | **No** — plugin is `enableOnMobile: false` on purpose |
+| Install | Nothing extra | Upload zip once; no server needed |
+
+**Practical rule:** use RemNote’s built-in Read-Only on iOS/iPad; use this plugin on the Mac.
+
+## What this plugin does (when on)
+
+- Hides editing chrome for a clean, wide reading layout
+- Blocks typing, paste, cut, and drop in the note editor
+- Still allows scrolling, links, fold/expand, copy (`Cmd+C`), find (`Cmd+F`), and navigation keys
+- Leaves command palette, search, dialogs, and flashcard practice inputs usable
 - Remembers on/off across RemNote restarts
 
-When Reading Mode is **off**, RemNote behaves normally again.
+## What it does not do
 
-## What it does **not** do
+- Does not replace iOS Read-Only Mode
+- Not a hard lock (IME / dictation might still get through)
+- RemNote UI updates can occasionally break styling until the plugin is updated
 
-- It does **not** run on iOS/Android (`enableOnMobile: false`). Use RemNote’s built-in Read-Only Mode there.
-- It is **not** a hard lock. Some unusual input methods (IME, dictation) might still get through.
-- RemNote UI updates can occasionally break the styling until the plugin is updated.
+## Install (zip)
 
-## Install (zip — recommended)
-
-1. Download or use `ReadingMode-PluginZip.zip` from `iCloud Drive/!GROKBOT/`
+1. Open `iCloud Drive/!GROKBOT/ReadingMode-PluginZip.zip`
 2. RemNote → **Settings → Plugins → Build → Upload plugin**
-3. Pick the zip
-4. Confirm it appears under **Manage** as **Reading Mode (⌥⇧R)**
+3. Confirm under **Manage**: **Reading Mode (⌥⇧R)**
 
-Repo URL in the zip: https://github.com/Burbank/remnote-reading-mode (must be public for RemNote to accept the upload).
+Repo (must be public for RemNote): https://github.com/Burbank/remnote-reading-mode
 
 ## Escape hatch
 
-If a plugin ever blocks RemNote from loading: open  
 https://remnote.com/notes?disablePlugins
-
-## Source
-
-Public GitHub: https://github.com/Burbank/remnote-reading-mode  
-Local project: `CURSOR_PROJECT_REPOS/remnote-reading-mode`
