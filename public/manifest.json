@@ -11,7 +11,7 @@
   },
   "theme": [],
   "enableOnMobile": false,
-  "description": "Distraction-free reading view with clean layout. Toggle with Option+Shift+R (\u2325\u21e7R). Sandboxed.",
+  "description": "Distraction-free reading view with CSS-based edit protection. Toggle with Option+Shift+R (\u2325\u21e7R).",
   "requestNative": false,
   "requiredScopes": [
     {

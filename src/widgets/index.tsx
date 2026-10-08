@@ -6,29 +6,64 @@ const READING_MODE_ID = 'reading-mode';
 const STORAGE_KEY = 'reading-mode-enabled';
 
 // CSS to hide editing chrome and create a distraction-free reading layout
-// Plus a visual indicator banner that reading mode is active
+// Plus edit protection and a non-intrusive visual indicator
 const readingModeCSS = `
-  /* Reading mode active indicator banner */
-  body::before {
-    content: "📖 Reading Mode Active (⌥⇧R to exit)";
+  /* Reading mode active indicator - small corner pill */
+  body::after {
+    content: "📖 Reading Mode";
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    bottom: 20px;
+    right: 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    text-align: center;
     padding: 8px 16px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
+    border-radius: 20px;
     z-index: 999999;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
     letter-spacing: 0.5px;
+    pointer-events: none;
+    opacity: 0.9;
   }
 
-  /* Offset content to account for banner */
-  body {
-    padding-top: 40px !important;
+  /* CSS-based edit protection for contenteditable elements in the main editor */
+  .rn-editor__document [contenteditable="true"],
+  .rn-editor [contenteditable="true"],
+  .rem-text [contenteditable="true"],
+  [data-editor] [contenteditable="true"] {
+    -webkit-user-modify: read-only !important;
+    user-select: text !important;
+    cursor: default !important;
+  }
+
+  /* Make caret invisible to discourage editing */
+  .rn-editor__document,
+  .rn-editor,
+  .rem-text {
+    caret-color: transparent !important;
+  }
+
+  /* Keep text selectable for copying */
+  .rn-editor__document *,
+  .rn-editor *,
+  .rem-text * {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+
+  /* Ensure links remain clickable */
+  a, .rem-link, [data-rem-link] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  /* Ensure fold/expand controls remain clickable */
+  .rem-bullet__icon,
+  .tree-node__expand-button,
+  [data-collapse-button] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
   }
 
   /* Hide editing chrome */
@@ -104,7 +139,7 @@ async function enableReadingMode(plugin: ReactRNPlugin) {
     // Persist state
     await plugin.storage.setSynced(STORAGE_KEY, true);
     
-    await plugin.app.toast('📖 Reading Mode enabled — visual layout only (⌥⇧R to toggle)');
+    await plugin.app.toast('📖 Reading Mode enabled — edit protection via CSS (⌥⇧R to toggle)');
   } catch (error) {
     console.error('Reading Mode: Failed to enable:', error);
     await plugin.app.toast('Failed to enable Reading Mode');
