@@ -6,7 +6,66 @@ const READING_MODE_ID = 'reading-mode';
 const STORAGE_KEY = 'reading-mode-enabled';
 
 // CSS to hide editing chrome and create a distraction-free reading layout
+// Plus edit protection and a non-intrusive visual indicator
 const readingModeCSS = `
+  /* Reading mode active indicator - small corner pill */
+  body::after {
+    content: "📖 Reading Mode";
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+    z-index: 999999;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  /* CSS-based edit protection for contenteditable elements in the main editor */
+  .rn-editor__document [contenteditable="true"],
+  .rn-editor [contenteditable="true"],
+  .rem-text [contenteditable="true"],
+  [data-editor] [contenteditable="true"] {
+    -webkit-user-modify: read-only !important;
+    user-select: text !important;
+    cursor: default !important;
+  }
+
+  /* Make caret invisible to discourage editing */
+  .rn-editor__document,
+  .rn-editor,
+  .rem-text {
+    caret-color: transparent !important;
+  }
+
+  /* Keep text selectable for copying */
+  .rn-editor__document *,
+  .rn-editor *,
+  .rem-text * {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+
+  /* Ensure links remain clickable */
+  a, .rem-link, [data-rem-link] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  /* Ensure fold/expand controls remain clickable */
+  .rem-bullet__icon,
+  .tree-node__expand-button,
+  [data-collapse-button] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
   /* Hide editing chrome */
   .rem-bullet__ring,
   .six-dot,
@@ -67,124 +126,20 @@ const readingModeCSS = `
 `;
 
 let isReadingModeEnabled = false;
-let eventListenersAttached = false;
-
-// Event handlers to prevent editing
-const preventEditing = (e: Event) => {
-  const target = e.target as HTMLElement;
-  
-  // Don't block typing in specific UI contexts
-  // Allow: command palette, search, flashcard queue inputs, plugin UI
-  if (target) {
-    const element = target as HTMLElement;
-    
-    // Check if we're in the omnibar/command palette
-    if (element.closest('.omnibar') || element.closest('[data-command-palette]') || element.closest('[role="combobox"]')) {
-      return;
-    }
-    
-    // Check if we're in a flashcard/practice queue input
-    if (element.closest('.queue') || element.closest('[data-practice-queue]') || element.closest('.practice-area') || 
-        element.closest('input[type="text"]') || element.closest('textarea')) {
-      // Allow if it's explicitly an input field (flashcard answer, etc.)
-      const tagName = element.tagName?.toLowerCase();
-      if (tagName === 'input' || tagName === 'textarea') {
-        return;
-      }
-    }
-    
-    // Check if we're in a modal, dialog, or popup
-    if (element.closest('[role="dialog"]') || element.closest('.modal') || element.closest('.popup')) {
-      return;
-    }
-  }
-  
-  // Allow navigation, copy, and plugin shortcuts
-  if (e instanceof KeyboardEvent) {
-    const key = e.key;
-    const isMod = e.metaKey || e.ctrlKey;
-    const isAlt = e.altKey;
-    
-    // Allow: navigation keys, copy, find, and our toggle shortcut (Alt+Shift+R)
-    const allowedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End', 'Escape', 'Tab'];
-    const isNavigation = allowedKeys.includes(key);
-    const isCopy = isMod && key.toLowerCase() === 'c';
-    const isFind = isMod && key.toLowerCase() === 'f';
-    const isToggle = isAlt && e.shiftKey && key.toLowerCase() === 'r';
-    
-    if (isNavigation || isCopy || isFind || isToggle) {
-      return; // Allow these
-    }
-  }
-  
-  // Prevent all other input events in the editor
-  e.preventDefault();
-  e.stopPropagation();
-};
-
-const blurEditor = () => {
-  try {
-    const activeElement = document.activeElement as HTMLElement;
-    if (activeElement && activeElement.blur) {
-      activeElement.blur();
-    }
-  } catch (error) {
-    console.warn('Reading Mode: Could not blur editor:', error);
-  }
-};
-
-const attachEventListeners = () => {
-  if (eventListenersAttached) return;
-  
-  try {
-    // Prevent text input and editing
-    document.addEventListener('beforeinput', preventEditing, { capture: true });
-    document.addEventListener('keydown', preventEditing, { capture: true });
-    document.addEventListener('paste', preventEditing, { capture: true });
-    document.addEventListener('drop', preventEditing, { capture: true });
-    document.addEventListener('cut', preventEditing, { capture: true });
-    
-    eventListenersAttached = true;
-  } catch (error) {
-    console.warn('Reading Mode: Could not attach event listeners:', error);
-  }
-};
-
-const removeEventListeners = () => {
-  if (!eventListenersAttached) return;
-  
-  try {
-    document.removeEventListener('beforeinput', preventEditing, { capture: true });
-    document.removeEventListener('keydown', preventEditing, { capture: true });
-    document.removeEventListener('paste', preventEditing, { capture: true });
-    document.removeEventListener('drop', preventEditing, { capture: true });
-    document.removeEventListener('cut', preventEditing, { capture: true });
-    
-    eventListenersAttached = false;
-  } catch (error) {
-    console.warn('Reading Mode: Could not remove event listeners:', error);
-  }
-};
 
 async function enableReadingMode(plugin: ReactRNPlugin) {
   if (isReadingModeEnabled) return;
   
   try {
-    // Apply CSS
+    // Apply CSS styling for distraction-free reading layout
     await plugin.app.registerCSS(READING_MODE_ID, readingModeCSS);
-    
-    // Attach event listeners to prevent editing
-    attachEventListeners();
-    
-    // Blur the editor to prevent immediate typing
-    blurEditor();
     
     isReadingModeEnabled = true;
     
     // Persist state
     await plugin.storage.setSynced(STORAGE_KEY, true);
     
-    await plugin.app.toast('Reading Mode enabled (Alt/Opt+Shift+R to toggle)');
+    await plugin.app.toast('📖 Reading Mode enabled — edit protection via CSS (⌥⇧R to toggle)');
   } catch (error) {
     console.error('Reading Mode: Failed to enable:', error);
     await plugin.app.toast('Failed to enable Reading Mode');
@@ -197,9 +152,6 @@ async function disableReadingMode(plugin: ReactRNPlugin) {
   try {
     // Remove CSS
     await plugin.app.registerCSS(READING_MODE_ID, '');
-    
-    // Remove event listeners
-    removeEventListeners();
     
     isReadingModeEnabled = false;
     

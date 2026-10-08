@@ -6,13 +6,13 @@
   "repoUrl": "https://github.com/Burbank/remnote-reading-mode",
   "version": {
     "major": 1,
-    "minor": 0,
+    "minor": 1,
     "patch": 0
   },
   "theme": [],
   "enableOnMobile": false,
-  "description": "Obsidian-style read-only reading view. Toggle with Option+Shift+R (\u2325\u21e7R).",
-  "requestNative": true,
+  "description": "Distraction-free reading view with CSS-based edit protection. Toggle with Option+Shift+R (\u2325\u21e7R).",
+  "requestNative": false,
   "requiredScopes": [
     {
       "type": "All",
